@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12A1 - Bứt Phá VACT 🚀</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --primary-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            --accent-color: #f59e0b;
+            --text-light: #f8fafc;
+            --card-bg: rgba(30, 41, 59, 0.7);
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: radial-gradient(circle at top, #1e293b, #0f172a);
+            color: var(--text-light); 
+            margin: 0; 
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        /* Header phong cách Hologram cực chiến */
+        .header-12a1 { 
+            text-align: center; 
+            padding: 30px 20px; 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(29, 78, 216, 0.2));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; 
+            border-radius: 24px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: pulse 3s infinite alternate;
+        }
+
+        .header-12a1 h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+        }
+
+        .header-12a1 p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #94a3b8;
+        }
+
+        /* Khu vực vòng quay */
+        .fortune-container { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px; 
+            border-radius: 32px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            text-align: center; 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fortune-container h2 {
+            margin-top: 0;
+            font-size: 1.6rem;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Giao diện Vòng Quay bằng Canvas */
+        .wheel-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 30px auto;
+        }
+
+        /* Kim chỉ hướng vòng quay */
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ef4444;
+            z-index: 10;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+        }
+
+        canvas {
+            border-radius: 50%;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.5), inset 0 0 20px rgba(0,0,0,0.6);
+            border: 8px solid #334155;
+            transition: transform 4s cubic-bezier(0.1, 0.8, 0.25, 1);
+        }
+
+        /* Nút bấm siêu cấp VIP */
+        .fortune-btn { 
+            background: var(--primary-gradient); 
+            color: white; 
+            border: none; 
+            padding: 16px 40px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fortune-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+        .fortune-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .fortune-btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Hộp hiển thị kết quả độc lạ */
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px dashed rgba(255,255,255,0.1);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+            animation: bounceIn 0.5s ease;
+        }
+
+        .score-tag {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .desc-text {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+
+        /* Các hiệu ứng Animation */
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2); }
+            100% { box-shadow: 0 10px 40px rgba(139, 92, 246, 0.4); }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            70% { transform: scale(0.9); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-12a1">
+            <h1><i class="fa-solid fa-graduation-cap"></i> LỚP 12A1 - CHINH PHỤC VACT 2026</h1>
+            <p>Bứt phá giới hạn - Về đích rực rỡ! 🔥</p>
+        </div>
+
+        <div class="fortune-container">
+            <h2><i class="fa-solid fa-dharmachakra fa-spin" style="--fa-animation-duration: 10s;"></i> VÒNG QUAY MAY MẮN 12A1</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <canvas id="wheel" width="320" height="320"></canvas>
+            </div>
+
+            <button class="fortune-btn" id="spin-btn" onclick="spinFortune()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Gieo Quẻ Thi Cử 🔮
+            </button>
+
+            <div id="fortune-result" class="result-box">
+                <div class="score-tag" id="res-score"></div>
+                <div class="desc-text" id="res-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách kết quả chi tiết, "đậm muối" học đường hơn
+        const outcomes = [
+            { score: "1000+ Điểm", text: "Thần Thủ Khoa gõ cửa! 12A1 chuẩn bị mở tiệc ăn mừng thôi. Đỉnh cao của chóp!", color: "#ef4444" },
+            { score: "950+ Điểm", text: "Á khoa xuất hiện! Phong độ ngút trời, đề thi VACT năm nay tuổi gì với bạn!", color: "#3b82f6" },
+            { score: "900+ Điểm", text: "Giữ vững tinh thần thép, 12A1 chiến hết mình! Cứ đà này NV1 thẳng tiến.", color: "#10b981" },
+            { score: "850+ Điểm", text: "Lực học siêu đỉnh! Lời dặn: Đọc kỹ đề, tô kỹ đáp án, không được chủ quan nha.", color: "#f59e0b" },
+            { score: "800+ Điểm", text: "800+ trong tầm tay! Chăm chỉ cày nốt vài bộ đề nữa là bứt phá ngoạn mục luôn.", color: "#8b5cf6" },
+            { score: "Đậu Nguyện Vọng 1", text: "Vạn sự hanh thông! Đi thi như đi dạo, làm bài bằng cả cái đầu lạnh của dân A1!", color: "#ec4899" }
+        ];
+
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        const btn = document.getElementById('spin-btn');
+        const numSegments = outcomes.length;
+        const anglePerSegment = Math.PI * 2 / numSegments;
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        // Vẽ vòng quay lên Canvas
+        function drawWheel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const radius = canvas.width / 2;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = 'bold 13px Segoe UI';
+
+            for (let i = 0; i < numSegments; i++) {
+                const angle = i * anglePerSegment;
+                
+                // Vẽ phân vùng màu sắc
+                ctx.beginPath();
+                ctx.fillStyle = outcomes[i].color;
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius, angle, angle + anglePerSegment);
+                ctx.lineTo(radius, radius);
+                ctx.fill();
+
+                // Viền phân cách mảnh gọn
+                ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Viết chữ lên từng ô phân vùng
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.rotate(angle + anglePerSegment / 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                ctx.shadowBlur = 4;
+                ctx.fillText(outcomes[i].score, radius * 0.65, 0);
+                ctx.restore();
+            }
+
+            // Vẽ tâm vòng quay nhỏ xinh xắn
+            ctx.beginPath();
+            ctx.arc(radius, radius, 18, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#000';
+            ctx.fill();
+        }
+
+        // Thực hiện hành động xoay
+        function spinFortune() {
+            if (isSpinning) return;
+            isSpinning = true;
+            btn.disabled = true;
+
+            // Ẩn kết quả cũ đi để chờ đón kết quả mới
+            const resultBox = document.getElementById('fortune-result');
+            resultBox.classList.remove('show');
+
+            // Tính toán vòng xoay (Quay ít nhất 5 vòng + thêm góc ngẫu nhiên)
+            const extraDegrees = Math.floor(Math.random() * 360);
+            const totalRotationDegrees = 1800 + extraDegrees; 
+            currentRotation += totalRotationDegrees;
+
+            // Dùng thuộc tính CSS để xoay mượt mà bằng phần cứng máy tính/điện thoại
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+            // Đợi 4 giây (khớp thời gian transition CSS) để lấy kết quả chính xác
+            setTimeout(() => {
+                isSpinning = false;
+                btn.disabled = false;
+
+                // Tính toán xem kim (ở đỉnh - góc 270 độ / -90 độ) đang chỉ vào ô nào
+                const actualDegrees = (currentRotation) % 360;
+                // Đổi từ góc xoay của vòng sang góc tương đối của kim chỉ
+                const pointerAngle = (360 - actualDegrees + 270) % 360;
+                const selectedIndex = Math.floor((pointerAngle / 360) * numSegments) % numSegments;
+                
+                const finalResult = outcomes[selectedIndex];
+
+                // Đổ dữ liệu và làm xuất hiện hộp kết quả đầy ấn tượng
+                document.getElementById('res-score').innerText = `🎉 ${finalResult.score}`;
+                document.getElementById('res-score').style.color = finalResult.color;
+                document.getElementById('res-text').innerText = finalResult.text;
+                
+                resultBox.classList.add('show');
+
+                // Bắn pháo hoa rực rỡ chúc mừng 12A1
+                confetti({
+                    particleCount: 150,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            }, 4000);
+        }
+
+        // Chạy lần đầu để vẽ vòng quay hoàn thiện
+        drawWheel();
+    </script>
+</body>
+</html>
